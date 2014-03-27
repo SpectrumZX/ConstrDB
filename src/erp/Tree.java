@@ -4,6 +4,8 @@ package erp;
 Класс наполняет структуру дерева 
 и возвращает наполненую DefaultTreeModel
 */
+import java.util.List;
+import java.util.ArrayList;
 import javax.swing.tree.*;
 
 public class Tree {
@@ -38,13 +40,34 @@ public class Tree {
        return dtm;
   }
   
-  // Универсальный загрузчик данных из БД в Дерево
-   public DefaultTreeModel loadToTree() { 
-       DefaultMutableTreeNode xroot = new DefaultMutableTreeNode("/ Корень");
+  // загружает данные из массива (от БД) в модель дерева
+   public DefaultTreeModel loadToModelTree(ArrayList<ArrayList<String>> massiv) { 
+    
+     // создаем корневой каталог
+    DefaultMutableTreeNode root = new DefaultMutableTreeNode("Каталог");   
+    DefaultTreeModel dtm = new DefaultTreeModel(root, true);   
+    
+    int L=0; // текущий уровень глубины каталога
+    for (String name : massiv.get(0)) {     // выводим весь 0-уровень
+          DefaultMutableTreeNode newItem = new DefaultMutableTreeNode(name, true);  // ЗДЕСЬ ДОБАВИТЬ ПРОВЕРКУ, ЕСЛИ ДЕТАЛЬ ТО FALSE, иначе TRUE
+          root.add(newItem);  
+     L++ ; 
+          for (String item : massiv.get(L)) {
+          newItem.add(new DefaultMutableTreeNode(item, true));   
+        
+          
+          }
+      }
+        
+  
+     
+    
        
        
        
-       DefaultTreeModel dtm = new DefaultTreeModel(xroot, true);
+
+       
        return dtm;
+
    }
-   }
+}
