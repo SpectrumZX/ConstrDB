@@ -1,5 +1,6 @@
 package erp;
 
+import java.util.Hashtable;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeModel;
@@ -7,13 +8,18 @@ import javax.swing.tree.TreePath;
 
 
 public class MainForm extends javax.swing.JFrame {
-    private JTree jTree2;
+   // private JTree jTree2;
 
     public MainForm() {
-        initComponents();        
+        initComponents();  
+
          }
     Tree mytree = new Tree();
+  
+    
+    
     @SuppressWarnings("unchecked")
+
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -25,7 +31,7 @@ public class MainForm extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTree1 = new javax.swing.JTree(mytree.show());
+        jTree1 = new javax.swing.JTree();
         jComboBox1 = new javax.swing.JComboBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -48,11 +54,12 @@ public class MainForm extends javax.swing.JFrame {
         jMenuItem14 = new javax.swing.JMenuItem();
         jMenuItem15 = new javax.swing.JMenuItem();
         jMenuItem16 = new javax.swing.JMenuItem();
+        jMenuItem17 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jSplitPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        jSplitPane1.setDividerLocation(180);
+        jSplitPane1.setDividerLocation(280);
         jSplitPane1.setPreferredSize(new java.awt.Dimension(800, 704));
 
         jPanel1.setPreferredSize(new java.awt.Dimension(200, 400));
@@ -98,18 +105,17 @@ public class MainForm extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(460, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton2)
                 .addContainerGap())
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 457, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
@@ -120,7 +126,7 @@ public class MainForm extends javax.swing.JFrame {
         jSplitPane1.setRightComponent(jPanel1);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel2.setPreferredSize(new java.awt.Dimension(600, 600));
+        jPanel2.setPreferredSize(new java.awt.Dimension(500, 12));
 
         jScrollPane1.setPreferredSize(new java.awt.Dimension(600, 600));
 
@@ -144,8 +150,8 @@ public class MainForm extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jComboBox1, 0, 298, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
+            .addComponent(jComboBox1, 0, 0, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -233,6 +239,15 @@ public class MainForm extends javax.swing.JFrame {
         jMenuItem16.setToolTipText("");
         jMenu4.add(jMenuItem16);
 
+        jMenuItem17.setText("Показать полную карту дерева");
+        jMenuItem17.setToolTipText("");
+        jMenuItem17.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem17ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItem17);
+
         jMenuBar1.add(jMenu4);
 
         setJMenuBar(jMenuBar1);
@@ -268,13 +283,18 @@ public class MainForm extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
        DB db = new DB();
-      DefaultTreeModel dtm1 = mytree.loadToModelTree(db.selectAll());
-      
-      jTree1.setModel(dtm1);
+      db.selectAll(); // загружаем данные из БД в коллекции
+      DefaultTreeModel dtm = mytree.loadToModelTree(db.consist_map, db.name_map, db.decimal_map);
+     
+      jTree1.setModel(dtm);
        DB.closeConnect();
        
 
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jMenuItem17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem17ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem17ActionPerformed
 
     public static void main(String args[]) {
 
@@ -284,6 +304,7 @@ public class MainForm extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new MainForm().setVisible(true);
+
             }
         });
     }
@@ -305,6 +326,7 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem14;
     private javax.swing.JMenuItem jMenuItem15;
     private javax.swing.JMenuItem jMenuItem16;
+    private javax.swing.JMenuItem jMenuItem17;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;

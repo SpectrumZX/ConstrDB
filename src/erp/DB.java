@@ -8,17 +8,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class DB {
     // конструктор активизирует подключение
     DB(){   
     DB.connect();
+   
     }
     
-    
+  
     public static Connection con = null; // хранит соединение с БД
-    
+    public static Connection con2 = null;
     public static void connect(){ 
                     
          try {
@@ -26,8 +28,9 @@ public class DB {
             Driver driver = (Driver) Class.forName("org.sqlite.JDBC").newInstance();
             String url = "jdbc:sqlite:c:/DB/ERP_DB.db";
             con = DriverManager.getConnection(url);
+            con2 = DriverManager.getConnection(url);
                         
-            }  catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {        }
+            }  catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {  System.out.println("error from driver");      }
                 
         
     }
@@ -37,86 +40,90 @@ public class DB {
             if (con != null) {
                 con.close();
             }
-        } catch (SQLException ex) {  }
-    }
-   
-    public void testPrint() {
-    ResultSet res = null; // получает результаты SQL запросов
-    Statement stment = null; // хранит и выполняет SQL запросы
-    String sql = "SELECT * FROM Detail"; // подготовка SQL запроса
-   try {            
-            stment = con.createStatement();
-            res = stment.executeQuery(sql); // выполнение SQL запроса
-            
-            while (res.next())  {
-            System.out.println(res.getString("name_object") + " - " + res.getString("decimal_number"));
-            }      
-       } catch (SQLException e) {   } 
-            
-            
-    }
-   
-    // выбрать все для загрузки дерева
-   public ArrayList<ArrayList<String>> selectAll() {
-   ArrayList<ArrayList<String>> massiv = new ArrayList<>(); // хранит уровни дерева
-   ArrayList<String> massiv_id = new ArrayList<>(); // хранит ID деталей/сборок
-   
-   
-   
-   ArrayList<String> massiv1 = new ArrayList<>(); 
-   ArrayList<String> massiv2 = new ArrayList<>();
-   ArrayList<String> massiv3 = new ArrayList<>(); 
-   massiv1.add("1 тест");
-   massiv1.add("1 проверка");
-   massiv1.add("1 деталь");
-   massiv1.add("1 массив");
-   massiv1.add("1 пункт");
-   massiv2.add("2 элемент");
-   massiv2.add("2 код");
-   massiv2.add("2 джава");
-   massiv3.add("3 клавиша");
-   massiv3.add("3 комп");
-   massiv3.add("3 мусор");
-   massiv3.add("3 селект");
-   
-           
-           
-    ResultSet res = null; // получает результаты SQL запросов
-    Statement stment = null; // хранит и выполняет SQL запросы
-    String sql = "SELECT * FROM Detail"; // подготовка SQL запроса
-   try {            
-            stment = con.createStatement();
-            res = stment.executeQuery(sql); // выполнение SQL запроса
-            
-            while (res.next())  {
-            String text = res.getString("name_object") + " - " + res.getString("decimal_number");
-            massiv_id.add(text);
-            massiv.add(0, massiv_id);   // пока-что запишем только 0-уровень
+        } catch (SQLException ex) { System.out.println("error from con"); }
         
-          System.out.println(massiv.get(0).get(massiv_id.size()-1));  // выводим последний элемент массива
-            }      
-       } catch (SQLException e) {   } 
-   
- massiv.add(1, massiv1);  // временная набивка уровней мусором
- massiv.add(2, massiv2);
- massiv.add(3, massiv_id);
- massiv.add(4, massiv3);
-   
-   return massiv;
-   }
-    
-
-/*
-    public void selectAllProduct(String sql_query){
-    // выборка всех изделий
+                try {
+            if (con2 != null) {
+                con2.close();
+            }
+        } catch (SQLException ex) { System.out.println("error from con2"); }
     }
-    public void selectAssembly(String sql_query){
-    // выборка данных
-    }
-      public void update(String sql_query){
-    // запись данных
-    }  
-*/
-    
+   
+   
+  public  HashMap<Integer, String> name_map = new HashMap<>();
+  public  HashMap<Integer, String> decimal_map = new HashMap<>();
+  public  HashMap<Integer, Integer> type_obj_map = new HashMap<>();
+  public  HashMap<Integer, Integer> condition_map = new HashMap<>();
+  public  HashMap<Integer, String> comment_map = new HashMap<>();
+  public  HashMap<Integer, Integer> material_map = new HashMap<>(); 
   
- }
+  // список включений
+ public ArrayList<Integer> consist_id = new ArrayList<>();
+ public ArrayList<Integer> temp_id = new ArrayList<>();
+ public ArrayList<Integer> temp_val = new ArrayList<>();
+ // public HashMap<Integer, Integer> tempory_full_consist_id = new HashMap<>(); // временная таблица иерархий (все подряд)
+ public HashMap<Integer, ArrayList<Integer>> consist_map = new HashMap<>(); // HashMap в котором Key - id, value - список входящих id  
+
+    // выбрать все для загрузки дерева
+   public void selectAll() {
+                
+    ResultSet res = null; // получает результаты SQL запросов
+    ResultSet res_struct = null;
+    Statement stment = null; // хранит и выполняет SQL запросы
+    Statement stment_struct = null;
+    String sql = "SELECT * FROM Detail"; // подготовка SQL запроса
+    String sql_struct = "SELECT * FROM TreeStructure";
+    
+   try {            
+            stment = con.createStatement();
+            stment_struct = con.createStatement();
+            res = stment.executeQuery(sql); // выполнение SQL запроса
+            res_struct = stment_struct.executeQuery(sql_struct); // выполнение SQL запроса по структуре дерева
+            
+             // заполняем временный список иерархии (ве подряд)
+            while(res_struct.next()) {
+            temp_id.add(res_struct.getInt("id"));
+            temp_val.add(res_struct.getInt("consist_id")); 
+         //   System.out.println("ID " + res_struct.getInt("id") + " | VALUE :"+ res_struct.getInt("consist_id")); ////////////////////
+                    }           
+            
+           while (res.next())  {
+            int id = res.getInt("id");
+//           System.out.println("Элемент "+id);  //////////////
+            
+int count;  // как достать индекс по значению ячейки в temp_id??  пока временный костыль со счетчиком
+count = 0;
+            // заполняем иерархию
+           if(res.getInt("type_object") == 1 || res.getInt("type_object") == 3){ // если тип равен 1-сборка или 3-заг.сборки, заполняем иерархию
+                for (int key_id : temp_id)  { 
+                    
+                    int value_id;
+                   
+                     if (key_id == id) {  
+                         value_id = temp_val.get(count);
+                        consist_id.add(value_id);  // заполняем ArrayList для конкретного ID 
+//                       System.out.println("Наполняется " + value_id + " в "+ key_id);  ////////////////////////
+                        
+                     }
+                   count++;   
+                 }
+              
+            }        
+            consist_map.put(id, new ArrayList<Integer>(consist_id)); // привязываем список id к сборке
+            consist_id.clear();
+            
+            name_map.put(id, res.getString("name_object"));
+            decimal_map.put(id, res.getString("decimal_number"));
+            type_obj_map.put(id, res.getInt("type_object"));
+            condition_map.put(id, res.getInt("condition"));
+            comment_map.put(id, res.getString("comment"));
+            material_map.put(id, res.getInt("material"));
+            
+          }      
+       } catch (SQLException e) {System.out.println("error from selectAll"); } 
+   
+
+   }
+  
+}
+  
