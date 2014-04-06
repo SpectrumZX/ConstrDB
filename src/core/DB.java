@@ -1,5 +1,5 @@
 
-package erp;
+package core;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 public class DB {
     // конструктор активизирует подключение
-    DB(){   
+   public DB(){   
     DB.connect();
    
     }
@@ -63,6 +63,7 @@ public class DB {
  public ArrayList<Integer> temp_val = new ArrayList<>();
  // public HashMap<Integer, Integer> tempory_full_consist_id = new HashMap<>(); // временная таблица иерархий (все подряд)
  public HashMap<Integer, ArrayList<Integer>> consist_map = new HashMap<>(); // HashMap в котором Key - id, value - список входящих id  
+ public HashMap<Integer, Element> elements_map = new HashMap<>();
 
     // выбрать все для загрузки дерева
    public void selectAll() {
@@ -84,12 +85,12 @@ public class DB {
             while(res_struct.next()) {
             temp_id.add(res_struct.getInt("id"));
             temp_val.add(res_struct.getInt("consist_id")); 
-         //   System.out.println("ID " + res_struct.getInt("id") + " | VALUE :"+ res_struct.getInt("consist_id")); ////////////////////
+        
                     }           
             
            while (res.next())  {
             int id = res.getInt("id");
-//           System.out.println("Элемент "+id);  //////////////
+
             
 int count;  // как достать индекс по значению ячейки в temp_id??  пока временный костыль со счетчиком
 count = 0;
@@ -102,7 +103,6 @@ count = 0;
                      if (key_id == id) {  
                          value_id = temp_val.get(count);
                         consist_id.add(value_id);  // заполняем ArrayList для конкретного ID 
-//                       System.out.println("Наполняется " + value_id + " в "+ key_id);  ////////////////////////
                         
                      }
                    count++;   
@@ -118,6 +118,8 @@ count = 0;
             condition_map.put(id, res.getInt("condition"));
             comment_map.put(id, res.getString("comment"));
             material_map.put(id, res.getInt("material"));
+            
+            elements_map.put(id, new Element(id, res.getString("name_object"), res.getString("decimal_number"), res.getInt("type_object")));
             
           }      
        } catch (SQLException e) {System.out.println("error from selectAll"); } 

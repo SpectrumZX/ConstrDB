@@ -1,7 +1,7 @@
-package erp;
+package gui;
 
-import java.util.Hashtable;
-import javax.swing.JTree;
+import core.DB;
+import core.Tree;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -306,8 +306,9 @@ public class MainForm extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
        DB db = new DB();
+ 
       db.selectAll(); // загружаем данные из БД в коллекции
-      DefaultTreeModel dtm = mytree.loadToModelTree(db.consist_map, db.name_map, db.decimal_map);
+      DefaultTreeModel dtm = mytree.loadToModelTree(db.consist_map, db.elements_map);
      
       jTree1.setModel(dtm);
        DB.closeConnect();
