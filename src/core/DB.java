@@ -61,7 +61,6 @@ public class DB {
  public ArrayList<Integer> consist_id = new ArrayList<>();
  public ArrayList<Integer> temp_id = new ArrayList<>();
  public ArrayList<Integer> temp_val = new ArrayList<>();
- // public HashMap<Integer, Integer> tempory_full_consist_id = new HashMap<>(); // временная таблица иерархий (все подряд)
  public HashMap<Integer, ArrayList<Integer>> consist_map = new HashMap<>(); // HashMap в котором Key - id, value - список входящих id  
  public HashMap<Integer, Element> elements_map = new HashMap<>();
 
@@ -103,13 +102,14 @@ count = 0;
                      if (key_id == id) {  
                          value_id = temp_val.get(count);
                         consist_id.add(value_id);  // заполняем ArrayList для конкретного ID 
-                        
+                
                      }
                    count++;   
                  }
               
             }        
-            consist_map.put(id, new ArrayList<Integer>(consist_id)); // привязываем список id к сборке
+            consist_map.put(id, new ArrayList<>(consist_id)); // привязываем список id к сборке
+            
             consist_id.clear();
             
             name_map.put(id, res.getString("name_object"));
@@ -119,6 +119,7 @@ count = 0;
             comment_map.put(id, res.getString("comment"));
             material_map.put(id, res.getInt("material"));
             
+            // массив из id и объектов Element
             elements_map.put(id, new Element(id, res.getString("name_object"), res.getString("decimal_number"), res.getInt("type_object")));
             
           }      
